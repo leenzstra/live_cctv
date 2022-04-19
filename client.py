@@ -1,10 +1,12 @@
 # import the necessary packages
 from imutils.video import VideoStream
+from imutils.video import FPS
 import imagezmq
 import argparse
 import socket
 import time
 import logging
+import cv2
 
 import signal
 import sys
@@ -27,8 +29,20 @@ sender = imagezmq.ImageSender(connect_to="tcp://{}:5555".format(
 rpiName = socket.gethostname()
 vs = VideoStream(src=0).start()
 time.sleep(2.0)
- 
+
+
 while True:
+	fps = FPS().start()
 	frame = vs.read()
+	
 	sender.send_image(rpiName, frame)
+	fps.update()
+	fps.stop()
+	print(fps.fps())
+	
+
+# while True:
+	# frame = vs.read()
+	# 
+	# sender.send_image(rpiName, frame)
 
