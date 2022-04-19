@@ -23,7 +23,7 @@ ap.add_argument("-s", "--server-ip", default='127.0.0.1',
 args = vars(ap.parse_args())
 
 
-sender = imagezmq.ImageSender(connect_to="tcp://{}:5555".format(
+sender = imagezmq.ImageSender(connect_to="udp://{}:5555".format(
 	args["server_ip"]))
 
 rpiName = socket.gethostname()
