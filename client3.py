@@ -1,5 +1,6 @@
 import cv2
 import socket
+from datetime import datetime
 import math
 import pickle
 import signal
@@ -8,13 +9,6 @@ import argparse
 
 max_length = 65000
 
-
-def signal_handler(sig, frame):
-    logging.info('You pressed Ctrl+C!')
-    sys.exit(0)
-
-
-signal.signal(signal.SIGINT, signal_handler)
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-s", "--server-ip", default='127.0.0.1',
@@ -26,7 +20,7 @@ host = args['server_ip']
 port = int(args['server_port'])
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
+ 
 cap = cv2.VideoCapture(0)
 ret, frame = cap.read()
 rpiName = socket.gethostname()
@@ -43,7 +37,10 @@ while ret:
         num_of_packs = 1
         if buffer_size > max_length:
             num_of_packs = math.ceil(buffer_size/max_length)
-        frame_info = {"packs": num_of_packs}
+        
+        time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        frame_info = {"packs":num_of_packs, "date":time}
+        
         sock.sendto(pickle.dumps(frame_info), (host, port))
 
         left = 0
